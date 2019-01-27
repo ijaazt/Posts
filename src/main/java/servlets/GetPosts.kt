@@ -15,19 +15,14 @@ import com.sun.corba.se.spi.presentation.rmi.StubAdapter.request
 import java.util.*
 
 
-@WebServlet(name = "CreatePost", value = ["/api/createPost"])
-class CreatePost: HttpServlet() {
+@WebServlet(name = "GetPosts", value = ["/api/getPosts"])
+class GetPosts: HttpServlet() {
     fun process(req: HttpServletRequest?, resp: HttpServletResponse?) {
-        System.out.println("Processing")
         val file = File(servletContext.getRealPath("/WEB-INF") + File.separator + "posts.json")
         val posts = PostManager()
-                .addPost(file, Post(req!!.getParameter("username"), req.getParameter("content")))
-        val ajax = "XMLHttpRequest" == req.getHeader("X-Requested-With")
         resp!!.setContentType("application/json")
         resp.setCharacterEncoding("UTF-8")
         resp.writer.write(posts.getAllPosts(file).toString())
-//                .getAllPosts(file).forEach { resp?.writer?.println(it.toString()) }
-
     }
     override fun doPost(req: HttpServletRequest?, resp: HttpServletResponse?) {
         process(req, resp)

@@ -6,6 +6,7 @@ import java.util.function.Consumer
 import javax.json.*
 
 class PostManager {
+
     private fun postToJson(post: Post): JsonObjectBuilder {
         val builder = Json.createObjectBuilder()
          hashMapOf("content" to post.content, "username" to post.username).forEach { t, u -> builder.add(t, u) }
