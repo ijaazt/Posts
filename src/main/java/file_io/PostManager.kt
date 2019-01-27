@@ -1,46 +1,42 @@
 package file_io
 
 import model.Post
+import sun.plugin2.liveconnect.ArgumentHelper.readObject
 import java.io.*
 import java.util.function.Consumer
 import javax.json.*
+import javax.json.stream.JsonParser
+data class Data(val success: Boolean, val posts: ArrayList<Post>)
+val ArrayList<Post>.asJson: JsonArray
+get() {
+    val arrayBuilder = Json.createArrayBuilder()
+    forEach { arrayBuilder.add(it.asJson) }
+    return arrayBuilder.build()
+}
+val Post.asJson: JsonObject
+get() {
+    return Json.createObjectBuilder().apply {
+        add("content", content)
+        add("username", username)
+    }.build()
+}
+val Data.asJson: JsonObject
+get() {
+    return Json.createObjectBuilder().apply {
+        add("success", success)
+        add("posts", posts.asJson)
+    }.build()
+}
 
-class PostManager {
-
-    private fun postToJson(post: Post): JsonObjectBuilder {
-        val builder = Json.createObjectBuilder()
-         hashMapOf("content" to post.content, "username" to post.username).forEach { t, u -> builder.add(t, u) }
-        return builder
+val JsonArray.asPostArray: ArrayList<Post>
+get() {
+    val arrayList = ArrayList<Post>()
+    forEach { val postObject = it.asJsonObject()
+        arrayList.add(Post(postObject.getString("username"), postObject.getString("content")))
     }
-    private fun jsonToPost(postJson: JsonObject): Post{
-        return Post(postJson.getString("content"), postJson.getString("username"))
-    }
-    private fun arrayOfPostsToJson(array: Array<Post>): JsonArrayBuilder {
-        val jsonArray = Json.createArrayBuilder()
-        array.forEach { jsonArray.add(postToJson(it)) }
-        return jsonArray
-    }
-    private fun arrayOfJsonToPost(jsonArray: JsonArray): Array<Post>{
-        val arrayOfPosts = mutableListOf<Post>()
-        jsonArray.forEach(Consumer {
-            arrayOfPosts.add(jsonToPost(it.asJsonObject()))
-        })
-        return arrayOfPosts.toTypedArray()
-    }
-
-    fun getAllPosts(file: File): JsonArray {
-        val parser = Json.createParser(FileInputStream(file))
-        parser.next()
-        val array = parser.array
-        parser.close()
-        return array;
-    }
-    fun addPost(file: File, post: Post): PostManager {
-        val savedPosts = arrayOfJsonToPost( getAllPosts(file)).toMutableList()
-        savedPosts.add(post)
-        val writer = Json.createWriter(FileWriter(file, false))
-        writer.writeArray(arrayOfPostsToJson(savedPosts.toTypedArray()).build())
-        writer.close()
-        return this
-    }
+    return arrayList
+}
+val JsonObject.asData: Data
+get() {
+    return Data(getBoolean("success"), getJsonArray("posts").asPostArray)
 }
