@@ -18,7 +18,7 @@
       <h1>My Post Application</h1>
       <p>Feel free to add a post!!</p>
     </header>
-    <form action="api/createPost" id="content-form">
+    <form action="api/posts" id="content-form">
     <div class="form-group">
       <label for="form-username">Username</label>
       <input type="text" placeholder="username" name="username" id="form-username"/>
@@ -38,13 +38,20 @@
   </div>
   <script   src="https://code.jquery.com/jquery-3.3.1.js"   integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="   crossorigin="anonymous"></script>
   <script>
-    function addPost(response) {
-      var html = "";
-      for(var i = response.length; i--;) {
-        html += "<div class='card col-sm-5 m-2'><article class='card-body'><h5 class=card-title>" + response[i]["username"] + "</h5>" + "<p class=card-text>" + response[i]["content"] + "</p></article></div>";
-      }
-      $(".posts").html(html);
+    function getPosts() {
+      $.getJSON("api/posts", function(data) {
+        var items = [];
+        $.each(data, function(index, value) {
+
+          items.push("<div class='card col m-2'><article class='card-body'><h5 class=card-title>" + value["username"] + "</h5>" + "<p class=card-text>" + value["content"] + "</p></article></div>");
+        });
+        $( ".row", {
+          "class": "my-new-list",
+          html: items.join( "" )
+        }).appendTo(".posts");
+      });
     }
+    getPosts();
 
     $("#content-form").on("submit", function (event) {
       event.preventDefault();
@@ -54,25 +61,11 @@
         url: $(this).attr("action"),
         data:  $(this).serialize(),
         success: function(response) {
-          if(response["success"] === false) {
-            alert("You need to fully fill out the form!!")
-          } else {
-            addPost(response["posts"]);
-          }
+          getPosts();
         }
       });
     });
-    // $(document).on("submit", "#content-form", function(event) {
-      //   var $form = $(this);
-      //   $.post($form.attr("action"), $form.serialize(), function(response) {
-      //     addPost(response)
-      //   });
-      //   event.preventDefault(); // Important! Prevents submitting the form.
-      // });
-      $.getJSON("api/getPosts", function (response) {
-          addPost(response["posts"]);
-      });
-  // </script>
+  </script>
 
   </body>
 </html>
