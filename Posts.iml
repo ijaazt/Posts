@@ -63,5 +63,7 @@
     <orderEntry type="library" name="Maven: javax.servlet:jstl:1.1.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:javax.servlet-api:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
+    <orderEntry type="library" name="react.development" level="application" />
+    <orderEntry type="library" name="react-dom.development" level="application" />
   </component>
 </module>

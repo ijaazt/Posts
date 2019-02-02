@@ -38,6 +38,9 @@
         </div>
     </form>
 </nav>
+<div id="like_button_container">
+
+</div>
 <div class="container">
 
 
@@ -115,6 +118,14 @@
     });
     $('.saved').prop('readonly', true);
 </script>
+
+<!-- Load React. -->
+<!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+<!-- Load our React component. -->
+<script src="like_button.js"></script>
 
 </body>
 </html>
