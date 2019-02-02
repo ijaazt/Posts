@@ -2,6 +2,7 @@ package servlets
 
 import com.google.gson.Gson
 import model.Post
+import sql.PostsManager
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
@@ -19,15 +20,20 @@ class Posts: HttpServlet(){
 
     override fun doGet(req: HttpServletRequest?, resp: HttpServletResponse?) {
         resp!!.apply {
-            setContentType("application/json")
-            setCharacterEncoding("UTF-8")
-            resp.outputStream.print(Gson().toJson(postsManager.getRows()))
+            contentType = "application/json"
+            characterEncoding = "UTF-8"
+            resp.writer.println(Gson().toJson(postsManager.getRows()))
         }
     }
 
     override fun doPost(req: HttpServletRequest?, resp: HttpServletResponse?) {
-        req!!.apply{
-            postsManager.createRow(Post(getParameter("username"), getParameter("content"), -1))
+        if (req!!.session.getAttribute("username") == null) {
+            req.session.setAttribute("username", req.getParameter("username"))
+            req.session.setAttribute("readonlyUsername", "saved")
+        }
+        var username: String = req.session.getAttribute("username") as String
+        req.apply {
+            postsManager.createRow(Post(username, getParameter("content"), -1))
         }
     }
 
@@ -39,7 +45,6 @@ class Posts: HttpServlet(){
 
     override fun destroy() {
         postsManager.apply {
-            dropTable()
             closeConnection()
         }
     }

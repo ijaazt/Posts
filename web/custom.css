@@ -1,0 +1,22 @@
+@media (min-width: 576px) {
+  .card-deck .card {
+    flex: 0 0 calc(100% / 2 - 15px * 2);
+  }
+}
+@media (min-width: 768px) {
+  .card-deck .card {
+    flex: 0 0 calc(100% / 3 - 15px * 2);
+  }
+}
+@media (min-width: 992px) {
+  .card-deck .card {
+    flex: 0 0 calc(100% / 3 - 15px * 2);
+  }
+}
+@media (min-width: 1200px) {
+  .card-deck .card {
+    flex: 0 0 calc(100% / 4 - 15px * 2);
+  }
+}
+
+/*# sourceMappingURL=custom.css.map */

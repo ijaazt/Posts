@@ -1,37 +1,10 @@
-package servlets
+package sql
 
 import model.Post
-import org.apache.tomcat.jdbc.pool.DataSource
-import java.sql.CallableStatement
-import java.sql.Connection
-import java.sql.Statement
-import java.util.*
-import kotlin.collections.ArrayList
 
-interface SQLManager<T> {
-    fun createConnection(): Connection {
-        val properties = Properties()
-        val dataSource = DataSource()
-
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver")
-        dataSource.setUrl("jdbc:mysql://localhost:3306/mitello")
-        dataSource.setUsername("root")
-        dataSource.setPassword("En7j6pur8v")
-        return dataSource.getConnection()
-    }
-    fun getRows(): Array<T>
-    fun getRow(id: Int): T
-    fun createTable()
-    fun deleteRow(id: Int)
-    fun createRow(value: T)
-    fun dropTable();
-    fun editRow(id: Int, value: T)
-    fun closeConnection()
-
-}
-class PostsManager(): SQLManager<Post> {
+class PostsManager : SQLManager<Post> {
     override fun closeConnection() {
-        conn.close();
+        conn.close()
     }
 
     private val conn = createConnection()
@@ -59,9 +32,8 @@ class PostsManager(): SQLManager<Post> {
             }
         }
     }
-
     override fun createTable() {
-        conn.createStatement().execute("create table if not exists Posts (id int PRIMARY KEY auto_increment, username varchar(25), content varchar(30));")
+        conn.createStatement().execute("create table if not exists Posts (id int PRIMARY KEY auto_increment, username varchar(40), content text not null);")
     }
 
     override fun deleteRow(id: Int) {
