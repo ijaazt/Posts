@@ -22,16 +22,19 @@ class PostsManager : SQLManager<Post> {
         }
     }
 
-    override fun getRow(id: Int): Post {
-        conn.prepareStatement("select * from Posts where id=?").apply {
-            setObject(1, id)
+    fun getRowsOfUser(user: String): Array<Post> {
+        conn.prepareStatement("select * from Posts where username=?").apply {
+            setObject(1, user)
             execute()
             resultSet.apply {
-                next()
-                return Post(getString("username"), getString("content"), getInt("id"))
+                val posts = ArrayList<Post>();
+                while(next())
+                    posts.add(Post(getString("username"), getString("content"), getInt("id")))
+                return posts.toTypedArray()
             }
         }
     }
+
     override fun createTable() {
         conn.createStatement().execute("create table if not exists Posts (id int PRIMARY KEY auto_increment, username varchar(40), content text not null);")
     }

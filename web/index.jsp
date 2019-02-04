@@ -21,53 +21,66 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="#">All Posts<span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="#" id="show-all-posts">All Posts<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">My Posts</a>
+                <a class="nav-link" id="show-my-posts" href="#">My Posts</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Add Post</a>
             </li>
+            <li class="dropdown nav-item">
+                <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="true">
+                    Dropdown link
+                </a>
+                <form action="api/posts" id="content-form" class="dropdown-menu p-4 form"
+                      aria-labelledby="dropdownMenuLink">
+                    <div class="form-group row">
+                        <label for="form-textarea">Content</label>
+                        <textarea name="content" id="form-textarea" class="form-control row" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary row">Submit post</button>
+                </form>
+            </li>
         </ul>
     </div>
-    <form class="form-inline">
+    <form class="form-inline form" action="api/user" id="signin-form">
         <div class="input-group">
-            <input type="text" class="form-control mr-sm-2" placeholder="Username" aria-label="Username"/>
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign In</button>
+            <input type="text" id="user-name" class="form-control mr-sm-2" placeholder="Username" name="username"
+                   aria-label="Username"/>
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Sign In</button>
         </div>
     </form>
 </nav>
+<div class="alert alert-success collapse" role="alert">
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Post</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <textarea class="modal-body">
+                ...
+            </textarea>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="like_button_container">
 
 </div>
 <div class="container">
-
-
-    <div class="dropdown">
-        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="true">
-            Dropdown link
-        </a>
-        <form action="api/posts" id="content-form" class="dropdown-menu p-4" aria-labelledby="dropdownMenuLink">
-            <div class="form-group">
-                <label for="save">Username</label>
-                <input type="text" placeholder="username" value="${username}" name="username" id="save"
-                       class="${readonlyUsername}"/>
-            </div>
-
-            <div class="form-group row">
-                <label for="form-textarea">Content</label>
-                <textarea name="content" id="form-textarea" class="form-control row" rows="3"></textarea>
-            </div>
-
-            <button type="submit" class="btn btn-primary row">Submit post</button>
-    </form>
-    </div>
-
-
-    <div class="container _card-container">
-    </div>
+    <div id="all-posts"></div>
 </div>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -80,52 +93,6 @@
         crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
         crossorigin="anonymous"></script>
-<script>
-    function getPosts() {
-        $.getJSON("api/posts", function (data) {
-            var items = [];
-            $.each(data, function (index, value) {
-
-                items.push("<div class='card bg-light mb-4'>" + "<div class='card-header'>Post</div>" +
-                    "<div class='card-body'>" +
-
-                    "<h5 class=card-title>" + value["username"] + "</h5>" +
-                    "<p class=card-text>" + value["content"] + "</p>" +
-                    "</div></div>");
-            });
-            $("<div>", {
-                "class": "card-deck _card-container",
-                html: items.join(""),
-                "id": "case-studies"
-            }).replaceAll("._card-container");
-        });
-    }
-
-    getPosts();
-
-    $("#content-form").on("submit", function (event) {
-        event.preventDefault();
-        console.log($(this).serialize());
-        $.ajax({
-            type: "POST",
-            url: $(this).attr("action"),
-            data: $(this).serialize(),
-            complete: function () {
-                getPosts();
-                $('#save').prop('readonly', true);
-            }
-        });
-    });
-    $('.saved').prop('readonly', true);
-</script>
-
-<!-- Load React. -->
-<!-- Note: when deploying, replace "development.js" with "production.min.js". -->
-<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-
-<!-- Load our React component. -->
-<script src="like_button.js"></script>
-
+<script src="app.js"></script>
 </body>
 </html>

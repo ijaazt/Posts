@@ -15,7 +15,6 @@ interface SQLManager<T> {
     }
 
     fun getRows(): Array<T>
-    fun getRow(id: Int): T
     fun createTable()
     fun deleteRow(id: Int)
     fun createRow(value: T)

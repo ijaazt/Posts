@@ -1,7 +1,8 @@
 package servlets
 
 import com.google.gson.Gson
-import model.Post
+import com.sun.net.httpserver.Authenticator
+import model.*
 import sql.PostsManager
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
@@ -10,7 +11,6 @@ import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
 @WebServlet("/api/posts")
-data class Success(var successful: Boolean, var operation: String)
 class Posts: HttpServlet(){
     private fun checkAccount(session: HttpSession, operation: String): Success {
         return Success(session.getAttribute("username") != null, operation)
@@ -32,7 +32,12 @@ class Posts: HttpServlet(){
         resp!!.apply {
             contentType = "application/json"
             characterEncoding = "UTF-8"
-            resp.writer.println(Gson().toJson(postsManager.getRows()))
+            val gson = Gson()
+            if(req!!.getParameter("user") != null) {
+                writer.println(gson.toJson(postsManager.getRowsOfUser(req.getParameter("user"))))
+            } else {
+                writer.println(gson.toJson(postsManager.getRows()))
+            }
         }
     }
 
@@ -40,19 +45,19 @@ class Posts: HttpServlet(){
         req!!.apply {
             checkAccount(session, "POST").apply {
                 if(successful) {
-                    postsManager.createRow(Post(session.getAttribute("username") as String, getParameter("content"), -1))
+                    postsManager.createRow(Post((session.getAttribute("username") as User).username, getParameter("content"), -1))
                 }
                 resp!!.writer.print(Gson().toJson(this))
             }
+            resp!!.writer.print("NOPE")
         }
-
     }
 
     override fun doPut(req: HttpServletRequest?, resp: HttpServletResponse?) {
         req!!.apply {
             checkAccount(session, "POST").apply {
                 if(successful) {
-                    postsManager.editRow(getParameter("id").toInt(), Post(getParameter("username"), getParameter("content"), getParameter("id").toInt()))
+                    postsManager.editRow(getParameter("id").toInt(), Post(session.getAttribute("username") as String, getParameter("content"), getParameter("id").toInt()))
                 }
                 resp!!.writer.print(Gson().toJson(this))
             }
