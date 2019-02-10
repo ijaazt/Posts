@@ -5,12 +5,7 @@
     <welcome-file-list>
         <welcome-file>loader</welcome-file>
     </welcome-file-list>
-    <filter>
-        <filter-name>CORSFilter</filter-name>
-        <filter-class>servlets.SimpleCORSFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>CORSFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    <listener>
+        <listener-class>servlets.WebSharedPool</listener-class>
+    </listener>
 </web-app>

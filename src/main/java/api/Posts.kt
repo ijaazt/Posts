@@ -1,9 +1,10 @@
-package servlets
-
+package api
 import com.google.gson.Gson
 import com.sun.net.httpserver.Authenticator
 import model.*
+import org.apache.tomcat.jdbc.pool.ConnectionPool
 import sql.PostsManager
+import javax.servlet.ServletConfig
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
@@ -15,8 +16,11 @@ class Posts: HttpServlet(){
     private fun checkAccount(session: HttpSession, operation: String): Success {
         return Success(session.getAttribute("username") != null, operation)
     }
-    private val postsManager = PostsManager()
-    override fun init() {
+    private lateinit var postsManager: PostsManager
+
+    override fun init(config: ServletConfig?) {
+        super.init(config)
+        postsManager = PostsManager((config!!.servletContext.getAttribute("connectionPool") as ConnectionPool).connection);
         postsManager.createTable()
     }
     override fun doDelete(req: HttpServletRequest?, resp: HttpServletResponse?) {
@@ -57,9 +61,9 @@ class Posts: HttpServlet(){
         req!!.apply {
             checkAccount(session, "POST").apply {
                 if(successful) {
-                    postsManager.editRow(getParameter("id").toInt(), Post(session.getAttribute("username") as String, getParameter("content"), getParameter("id").toInt()))
+                    val post = Gson().fromJson<Post>(reader, Post::class.java)
+                    postsManager.editRow(post.id, post)
                 }
-                resp!!.writer.print(Gson().toJson(this))
             }
         }
     }

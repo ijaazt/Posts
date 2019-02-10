@@ -1,13 +1,12 @@
 package sql
 
 import model.Post
+import java.sql.Connection
 
-class PostsManager : SQLManager<Post> {
+class PostsManager(val conn: Connection): SQLManager<Post> {
     override fun closeConnection() {
         conn.close()
     }
-
-    private val conn = createConnection()
 
     override fun getRows(): Array<Post> {
         conn.createStatement().apply {
